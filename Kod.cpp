@@ -1,6 +1,25 @@
-#include <stdio.h>
+#include <iostream>
+using namespace std;
 
-int main(){
-    printf("nfiowaNOIFawo");
-    return 0;
-}
+// LABORATORIJSKE VJEZBE 1.
+
+// 1. zadatak
+
+// 2. zadatak
+
+// 3. zadatak
+
+// 4. zadatak
+
+// 5. zadatak
+
+// 6. zadatak
+
+// 8. zadatak
+
+// 9. zadatak
+
+// 10. zadatak
+
+// 11. zadatak
+
