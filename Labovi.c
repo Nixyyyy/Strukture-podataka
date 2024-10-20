@@ -68,154 +68,152 @@ int ReadRows(const char* filename)
 }*/
 
 // 2. zadatak
-
-/* #define _CRT_SECURE_NO_WARNINGS
+/*
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define MAX 50
 
-struct _struct;
+// Definicija strukture osobe
+struct _person;
 typedef struct _person* position;
-typedef struct _person
-{
-	//ime
-	char name[MAX];
-	char lastName[MAX];
-	int birthYear;
+typedef struct _person {
+    char name[MAX];
+    char lastName[MAX];
+    int birthYear;
+    position next;
+} Person;
 
-	position next;
-}Person;
-
+// Deklaracije funkcija
 position CreatePerson(char* name, char* lastName, int birthYear);
-int PrependList(position head, char* name, char* lastname, int birthYear);
-int PrintList(position first);
+int PrependList(position head, char* name, char* lastName, int birthYear);
 int AppendList(position head, char* name, char* lastName, int birthYear);
+int PrintList(position first);
 position FindLast(position head);
 position FindPerson(position first, char* lastName);
-int Delete(position head, char*);
-position FindPrev(position head, char* name);
+int Delete(position head, char* lastName);
+position FindPrev(position head, char* lastName);
 
-int main()
-{
-	Person head =
-	{
-		.name = {0},
-		.lastName = {0},
-		.birthYear = {0},
-		.next = NULL
-	};
+int main() {
+    // Inicijalizacija praznog head čvora
+    Person head = { .name = "", .lastName = "", .birthYear = 0, .next = NULL };
 
-	return 0;
+    // Dodavanje elemenata na kraj liste
+    AppendList(&head, "Ante", "Antic", 2003);
+    AppendList(&head, "Borna", "Boric", 2004);
+
+    // Ispis liste
+    PrintList(&head);
+
+    // Dodavanje elementa na početak liste
+    PrependList(&head, "Cvita", "Cvitic", 2002);
+    PrintList(&head);
+
+    // Brisanje elementa iz liste prema prezimenu
+    Delete(&head, "Boric");
+    PrintList(&head);
+
+    return 0;
 }
 
-position CreatePerson(char* name, char* lastName, int birthYear)
-{
-	position newPerson = NULL;
-	newPerson = (position)malloc(sizeof(Person));
-	if (!newPerson)
-	{
-		printf("Bad allocation");
-		return NULL;
-	}
+// Funkcija za kreiranje nove osobe
+position CreatePerson(char* name, char* lastName, int birthYear) {
+    position newPerson = (position)malloc(sizeof(Person));
+    if (!newPerson) {
+        printf("Memory allocation failed.\n");
+        return NULL;
+    }
 
-	strcpy(newPerson->name, name);
-	strcpy(newPerson->lastName, lastName);
-	newPerson->birthYear = birthYear;
+    strcpy(newPerson->name, name);
+    strcpy(newPerson->lastName, lastName);
+    newPerson->birthYear = birthYear;
+    newPerson->next = NULL;
+
+    return newPerson;
 }
 
-int PrependList(position head, char* name, char* lastname, int birthYear)
-{
-	position newPerson = NULL;
-	newPerson = CreatePerson(name, lastname, birthYear);
-	if (newPerson == NULL)
-	{
-		printf("greska");
-		return -1;
-	}
-	newPerson->next = head->next;
-	head->next = newPerson;
-	return EXIT_SUCCESS;
+// Funkcija za dodavanje osobe na početak liste
+int PrependList(position head, char* name, char* lastName, int birthYear) {
+    position newPerson = CreatePerson(name, lastName, birthYear);
+    if (newPerson == NULL) {
+        return -1;
+    }
+
+    newPerson->next = head->next;
+    head->next = newPerson;
+
+    return EXIT_SUCCESS;
 }
 
-int PrintList(position first)
-{
-	position temp = NULL;
-	temp = first;
-	while (temp != NULL)
-	{
-		printf("%s %s %d", temp->name, temp->lastName, temp->birthYear);
-		temp = temp->next;
-	}
-	return EXIT_SUCCESS;
+// Funkcija za dodavanje osobe na kraj liste
+int AppendList(position head, char* name, char* lastName, int birthYear) {
+    position newPerson = CreatePerson(name, lastName, birthYear);
+    if (newPerson == NULL) {
+        return -1;
+    }
+
+    position last = FindLast(head);
+    last->next = newPerson;
+
+    return EXIT_SUCCESS;
 }
 
-int AppendList(position head, char* name, char* lastName, int birthYear)
-{
-	position newPerson = NULL;
-	position last = NULL;
-
-	newPerson = CreatePerson(name, lastName, birthYear);
-	if (newPerson == NULL)
-	{
-		printf("Failed");
-		return -1;
-	}
-
-	last = FindLast(head);
-	last->next = newPerson;
-	newPerson->next = last->next;
-	last->next = newPerson;
-
-	return EXIT_SUCCESS;
+// Funkcija za pronalaženje zadnjeg elementa u listi
+position FindLast(position head) {
+    position temp = head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    return temp;
 }
 
-position FindLast(position head)
-{
-	position last = NULL;
-	last = head;
-	while (last->next != NULL)
-	{
-		last = last->next;
-	}
-	return last;
+// Funkcija za ispis liste
+int PrintList(position first) {
+    position temp = first->next;  // Preskačemo head čvor
+    while (temp != NULL) {
+        printf("%s %s %d\n", temp->name, temp->lastName, temp->birthYear);
+        temp = temp->next;
+    }
+    printf("\n");  // Novi redak nakon ispisa liste
+    return EXIT_SUCCESS;
 }
 
-position FindPerson(position first, char* lastName)
-{
-	position temp = NULL;
-
-	temp = first;
-	while (temp)
-	{
-		if (strcmp(lastName, temp->lastName) == 0)
-		{
-			return temp;
-		}
-		temp = temp->next;
-	}
-
-	return NULL;
+// Funkcija za pronalaženje osobe prema prezimenu
+position FindPerson(position first, char* lastName) {
+    position temp = first->next;
+    while (temp != NULL) {
+        if (strcmp(temp->lastName, lastName) == 0) {
+            return temp;
+        }
+        temp = temp->next;
+    }
+    return NULL;
 }
 
-int Delete(position head, char* name)
-{
-	position prev = NULL;
-	position toDelete = NULL;
-
-	prev = FindPrev(head, name);
-
-	toDelete = prev->next;
-	prev->next = toDelete->next;
-
-	return EXIT_SUCCESS;
+// Funkcija za pronalaženje prethodnog elementa u odnosu na traženo prezime
+position FindPrev(position head, char* lastName) {
+    position temp = head;
+    while (temp->next != NULL && strcmp(temp->next->lastName, lastName) != 0) {
+        temp = temp->next;
+    }
+    return temp->next ? temp : NULL;
 }
 
-position FindPrev(position head, char* name)
-{
-	position temp = head;
+// Funkcija za brisanje osobe prema prezimenu
+int Delete(position head, char* lastName) {
+    position prev = FindPrev(head, lastName);
+    if (prev == NULL) {
+        printf("Person with last name %s not found.\n", lastName);
+        return -1;
+    }
 
+    position toDelete = prev->next;
+    prev->next = toDelete->next;
+    free(toDelete);
+
+    return EXIT_SUCCESS;
 }*/
 
 
